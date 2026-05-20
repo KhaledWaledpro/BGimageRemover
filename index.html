@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Background Remover</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card */
+.container {
+    width: 420px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+/* Dropzone */
+.dropzone {
+    border: 2px dashed #38bdf8;
+    padding: 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.dropzone:hover {
+    background: rgba(56,189,248,0.1);
+}
+
+input { display: none; }
+
+/* Preview */
+.preview {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.box {
+    width: 50%;
+    position: relative;
+}
+
+.box img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* 🔥 Loading overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* moving shine effect */
+.loading-overlay::before {
+    content: "";
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(56,189,248,0.4),
+        transparent
+    );
+    animation: move 1s infinite;
+}
+
+@keyframes move {
+    0% { left: -50%; }
+    100% { left: 120%; }
+}
+
+/* Loader dots */
+.dots {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    display: flex;
+    gap: 6px;
+}
+
+.dots span {
+    width: 8px;
+    height: 8px;
+    background: #38bdf8;
+    border-radius: 50%;
+    animation: bounce 0.6s infinite alternate;
+}
+
+.dots span:nth-child(2){ animation-delay:0.2s }
+.dots span:nth-child(3){ animation-delay:0.4s }
+
+@keyframes bounce {
+    to { transform: translateY(-10px); opacity:0.4; }
+}
+
+/* Button */
+button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #22c55e;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #16a34a;
+}
+
+.download {
+    display: none;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>AI Background Remover</h2>
+
+<label class="dropzone">
+    اضغط أو اسحب الصورة هنا
+    <input type="file" id="file" accept="image/*">
+</label>
+
+<button onclick="process()">ابدأ المعالجة</button>
+
+<div class="preview" id="preview"></div>
+
+<a id="download" class="download">
+    <button>تحميل الصورة</button>
+</a>
+
+</div>
+
+<script>
+const API_URL = "https://YOUR-SPACE.hf.space/remove-bg";
+
+let fileData = null;
+
+document.getElementById("file").addEventListener("change",(e)=>{
+    fileData = e.target.files[0];
+
+    document.getElementById("preview").innerHTML = `
+        <div class="box">
+            <img src="${URL.createObjectURL(fileData)}">
+        </div>
+    `;
+});
+
+async function process(){
+
+    if(!fileData){
+        alert("اختر صورة");
+        return;
+    }
+
+    const preview = document.getElementById("preview");
+
+    // 🔥 loading animation على الصورة
+    preview.innerHTML = `
+        <div class="box">
+            <img src="${URL.createObjectURL(fileData)}">
+            <div class="loading-overlay">
+                <div class="dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const form = new FormData();
+    form.append("file", fileData);
+
+    try {
+        const res = await fetch(https://khalidwalidabdelnaseer22-image-remover-bg.hf.space/remove-bg, {
+            method:"POST",
+            body: form
+        });
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+        preview.innerHTML = `
+            <div class="box">
+                <img src="${URL.createObjectURL(fileData)}">
+            </div>
+
+            <div class="box">
+                <img src="${url}">
+            </div>
+        `;
+
+        const download = document.getElementById("download");
+        download.href = url;
+        download.download = "no-bg.png";
+        download.style.display = "block";
+
+    } catch(err){
+        alert("حصل خطأ في الاتصال بالـ API");
+    }
+}
+</script>
+
+</body>
+</html>
