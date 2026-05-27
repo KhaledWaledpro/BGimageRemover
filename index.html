@@ -139,6 +139,51 @@ button:hover {
     display: none;
     margin-top: 10px;
 }
+    footer{
+            width:100%;
+            padding:20px;
+            text-align:center;
+            background:rgba(255,255,255,0.08);
+            backdrop-filter:blur(10px);
+            border-top:1px solid rgba(255,255,255,0.1);
+            box-shadow:0 -5px 20px rgba(0,0,0,0.3);
+        }
+
+        footer p{
+            color:white;
+            font-size:20px;
+            letter-spacing:1px;
+            font-weight:bold;
+        }
+
+        footer span{
+            color:#38bdf8;
+            text-shadow:0 0 10px #38bdf8;
+            transition:0.3s;
+        }
+
+        footer span:hover{
+            color:#f43f5e;
+            text-shadow:0 0 15px #f43f5e;
+        }
+
+        footer p::before,
+        footer p::after{
+            content:"✨";
+            margin:0 10px;
+            animation:glow 2s infinite alternate;
+        }
+
+        @keyframes glow{
+            from{
+                opacity:0.5;
+                transform:translateY(0px);
+            }
+            to{
+                opacity:1;
+                transform:translateY(-3px);
+            }
+        }
 </style>
 </head>
 
@@ -162,7 +207,9 @@ button:hover {
 </a>
 
 </div>
-
+    <footer>
+        <p>Developed By ❤ <span>KHALED WALED</span> ❤</p>
+    </footer>
 <script>
 const API_URL = "https://khalidwalidabdelnaseer22-image-remover-bg.hf.space/remove-bg";
 
